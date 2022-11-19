@@ -31,6 +31,7 @@ namespace PlatformService
             {
                 opts.UseInMemoryDatabase("mem");
             });
+            services.AddScoped<IPlatformRepo, PlatformRepo>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
