@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: platformservice
-          image: dp152/platformservice:1.0.1
+          image: dp152/platformservice:1.0.2
 ---
 apiVersion: v1
 kind: Service
