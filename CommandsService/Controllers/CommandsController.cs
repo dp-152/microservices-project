@@ -23,7 +23,7 @@ namespace CommandsService.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<CommandReadDto>> GetCommandsForPlatform(int platformId)
         {
-            Console.WriteLine($"--->> Hit GetCommandsForPlatform, platformId: {platformId.ToString()}");
+            Console.WriteLine($"--->> Hit {nameof(GetCommandsForPlatform)}, platformId: {platformId.ToString()}");
 
             if (!_repository.PlatformExists(platformId))
                 return NotFound();
@@ -31,6 +31,22 @@ namespace CommandsService.Controllers
             var commands = _repository.GetCommandsForPlatform(platformId);
 
             return Ok(_mapper.Map<IEnumerable<CommandReadDto>>(commands));
+        }
+
+        [HttpGet("{commandId}", Name = nameof(GetCommandForPlatform))]
+        public ActionResult<CommandReadDto> GetCommandForPlatform(int platformId, int commandId)
+        {
+            Console.WriteLine($"--->> Hit {nameof(GetCommandForPlatform)}, platformId: {platformId.ToString()}, commandId: {commandId.ToString()}");
+
+            if (!_repository.PlatformExists(platformId))
+                return NotFound();
+
+            var command = _repository.GetCommand(platformId, commandId);
+
+            if (command is null)
+                return NotFound();
+
+            return Ok(_mapper.Map<CommandReadDto>(command));
         }
     }
 }
