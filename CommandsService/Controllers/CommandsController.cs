@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using AutoMapper;
 using CommandsService.Data;
 using CommandsService.Dtos;
+using CommandsService.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CommandsService.Controllers
 {
     [ApiController]
-    [Route("api/c/platforms/{platformId}/[controller]")]
+    [Route("api/c/Platforms/{platformId}/[controller]")]
     public class CommandsController : ControllerBase
     {
         private readonly ICommandRepo _repository;
@@ -36,7 +37,8 @@ namespace CommandsService.Controllers
         [HttpGet("{commandId}", Name = nameof(GetCommandForPlatform))]
         public ActionResult<CommandReadDto> GetCommandForPlatform(int platformId, int commandId)
         {
-            Console.WriteLine($"--->> Hit {nameof(GetCommandForPlatform)}, platformId: {platformId.ToString()}, commandId: {commandId.ToString()}");
+            Console.WriteLine(
+                $"--->> Hit {nameof(GetCommandForPlatform)}, platformId: {platformId.ToString()}, commandId: {commandId.ToString()}");
 
             if (!_repository.PlatformExists(platformId))
                 return NotFound();
@@ -47,6 +49,27 @@ namespace CommandsService.Controllers
                 return NotFound();
 
             return Ok(_mapper.Map<CommandReadDto>(command));
+        }
+
+        [HttpPost]
+        public ActionResult CreateCommandForPlatform(int platformId, CommandCreateDto commandData)
+        {
+            Console.WriteLine($"--->> Hit {nameof(GetCommandsForPlatform)}, platformId: {platformId.ToString()}");
+
+            if (!_repository.PlatformExists(platformId))
+                return NotFound();
+
+            var command = _mapper.Map<Command>(commandData);
+
+            _repository.CreateCommand(platformId, command);
+            _repository.SaveChanges();
+
+            var result = _mapper.Map<CommandReadDto>(command);
+            return CreatedAtRoute(
+                nameof(GetCommandForPlatform),
+                new { platformId = result.PlatformId, commandId = result.Id },
+                result
+            );
         }
     }
 }
