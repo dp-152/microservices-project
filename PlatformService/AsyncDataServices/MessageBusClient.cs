@@ -1,4 +1,6 @@
-﻿using System;
+using System;
+using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using PlatformService.Dtos;
 using RabbitMQ.Client;
@@ -38,7 +40,24 @@ namespace PlatformService.AsyncDataServices
 
         public void PublishNewPlatform(PlatformPublishDto platformData)
         {
-            throw new System.NotImplementedException();
+            var message = JsonSerializer.Serialize(platformData);
+            if (_connection.IsOpen)
+            {
+                Console.WriteLine("--->> RabbitMQ Connection open, sending message...");
+                SendMessage(message);
+            }
+            else
+            {
+                Console.WriteLine("--->> RabbitMQ Connection not open, refusing to send.");
+            }
+        }
+
+        private void SendMessage(string message)
+        {
+            var body = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(message));
+            _channel.BasicPublish(exchange: "trigger", routingKey: null, basicProperties: null, body: body);
+
+            Console.WriteLine($"--->> Sent message: {message}");
         }
 
         private void RabbitMQ_ConnectionShutdown(object sender, ShutdownEventArgs e)
