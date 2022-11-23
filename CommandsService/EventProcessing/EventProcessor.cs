@@ -19,4 +19,10 @@ namespace CommandsService.EventProcessing
             throw new System.NotImplementedException();
         }
     }
+
+    enum EventType
+    {
+        PlatformPublish,
+        Undetermined
+    }
 }
