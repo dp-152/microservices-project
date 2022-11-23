@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
@@ -9,17 +9,15 @@ namespace PlatformService.AsyncDataServices
 {
     public class MessageBusClient : IMessageBusClient
     {
-        private readonly IConfiguration _configuration;
         private readonly IConnection _connection;
         private readonly IModel _channel;
 
         public MessageBusClient(IConfiguration configuration)
         {
-            _configuration = configuration;
             var factory = new ConnectionFactory
             {
-                HostName = _configuration["RabbitMQHost"],
-                Port = int.Parse(_configuration["RabbitMQPort"])
+                HostName = configuration["RabbitMQHost"],
+                Port = int.Parse(configuration["RabbitMQPort"])
             };
 
             try
@@ -49,6 +47,16 @@ namespace PlatformService.AsyncDataServices
             else
             {
                 Console.WriteLine("--->> RabbitMQ Connection not open, refusing to send.");
+            }
+        }
+
+        public void Dispose()
+        {
+            Console.WriteLine("---> Disposing Message Bus");
+            if (_channel.IsOpen)
+            {
+                _channel.Close();
+                _connection.Close();
             }
         }
 
