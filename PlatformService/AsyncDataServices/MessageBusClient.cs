@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
@@ -63,7 +63,7 @@ namespace PlatformService.AsyncDataServices
         private void SendMessage(string message)
         {
             var body = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(message));
-            _channel.BasicPublish(exchange: "trigger", routingKey: null, basicProperties: null, body: body);
+            _channel.BasicPublish(exchange: "trigger", routingKey: String.Empty, basicProperties: null, body: body);
 
             Console.WriteLine($"--->> Sent message: {message}");
         }
