@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text.Json;
 using AutoMapper;
 using CommandsService.Data;
@@ -21,7 +21,14 @@ namespace CommandsService.EventProcessing
 
         public void ProcessEvent(string message)
         {
-            throw new NotImplementedException();
+            var eventType = DetermineEvent(message);
+
+            switch (eventType)
+            {
+                case EventType.PlatformPublish:
+                    AddPlatform(message);
+                    break;
+            }
         }
 
         private EventType DetermineEvent(string notificationMessage)
@@ -55,6 +62,8 @@ namespace CommandsService.EventProcessing
 
                 repository.CreatePlatform(platform);
                 repository.SaveChanges();
+
+                Console.WriteLine("--->> Platform saved to database.");
             }
             catch (Exception ex)
             {
